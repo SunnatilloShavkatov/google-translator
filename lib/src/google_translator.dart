@@ -2,6 +2,7 @@ library google_transl;
 
 import 'dart:async';
 import 'dart:convert' show jsonDecode;
+import 'dart:developer';
 
 import 'package:http/http.dart' as http;
 
@@ -88,7 +89,11 @@ class GoogleTranslator {
     String from = 'auto',
     String to = 'en',
   }) {
-    translate(text, from: from, to: to).then(print);
+    translate(text, from: from, to: to).then(
+      (e) {
+        log(e.text);
+      },
+    );
   }
 
   /// Sets base URL for countries that default URL doesn't work
