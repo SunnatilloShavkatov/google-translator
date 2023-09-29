@@ -1,9 +1,9 @@
 /// Language object with name and code (ISO)
 class Language {
+  const Language(this.code, this.name);
+
   final String name;
   final String code;
-
-  Language(this.code, this.name);
 
   @override
   String toString() => name;
@@ -150,6 +150,7 @@ class LanguageList {
   };
 
   Language operator [](String code) {
+    // ignore: parameter_assignments
     code = code.toLowerCase();
     if (_langs.containsKey(code)) {
       return Language(code, _langs[code]!);
@@ -167,13 +168,12 @@ class LanguageList {
 }
 
 class LanguageNotSupportedException implements Exception {
-  final String msg;
   LanguageNotSupportedException(String lang)
       : msg = '$lang is not a supported language.';
+  final String msg;
 }
 
 extension _CamelCase on String {
-  String toCamelCase() {
-    return '${this[0].toUpperCase()}${this.substring(1).toLowerCase()}';
-  }
+  String toCamelCase() =>
+      '${this[0].toUpperCase()}${substring(1).toLowerCase()}';
 }

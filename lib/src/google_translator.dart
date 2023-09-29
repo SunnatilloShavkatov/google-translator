@@ -2,30 +2,31 @@ library google_transl;
 
 import 'dart:async';
 import 'dart:convert' show jsonDecode;
+
 import 'package:http/http.dart' as http;
-import './tokens/google_token_gen.dart';
+
 import './langs/language.dart';
+import './tokens/google_token_gen.dart';
 
 part './model/translation.dart';
 
-///
-/// This library is a Dart implementation of Google Translate API
-///
-/// [author] Gabriel N. Pacheco.
-///
 class GoogleTranslator {
-  var _baseUrl = 'translate.googleapis.com'; // faster than translate.google.com
+  GoogleTranslator({this.client = ClientType.siteGT});
+
+  String _baseUrl = 'translate.googleapis.com';
   final _path = '/translate_a/single';
   final _tokenProvider = GoogleTokenGenerator();
   final _languageList = LanguageList();
   final ClientType client;
 
-  GoogleTranslator({this.client = ClientType.siteGT});
-
   /// Translates texts from specified language to another
-  Future<Translation> translate(String sourceText,
-      {String from = 'auto', String to = 'en'}) async {
-    for (var each in [from, to]) {
+  Future<Translation> translate(
+    String sourceText, {
+    String from = 'auto',
+    String to = 'en',
+  }) async {
+    String from0 = from;
+    for (final each in [from, to]) {
       if (!LanguageList.contains(each)) {
         throw LanguageNotSupportedException(each);
       }
@@ -47,7 +48,7 @@ class GoogleTranslator {
       'q': sourceText
     };
 
-    var url = Uri.https(_baseUrl, _path, parameters);
+    final url = Uri.https(_baseUrl, _path, parameters);
     final data = await http.get(url);
 
     if (data.statusCode != 200) {
@@ -65,10 +66,10 @@ class GoogleTranslator {
       sb.write(jsonData[0][c][0]);
     }
 
-    if (from == 'auto' && from != to) {
-      from = jsonData[2] ?? from;
+    if (from0 == 'auto' && from != to) {
+      from0 = jsonData[2] ?? from;
       if (from == to) {
-        from = 'auto';
+        from0 = 'auto';
       }
     }
 
@@ -76,19 +77,24 @@ class GoogleTranslator {
     return _Translation(
       translated,
       source: sourceText,
-      sourceLanguage: _languageList[from],
+      sourceLanguage: _languageList[from0],
       targetLanguage: _languageList[to],
     );
   }
 
   /// Translates and prints directly
-  void translateAndPrint(String text,
-      {String from = 'auto', String to = 'en'}) {
+  void translateAndPrint(
+    String text, {
+    String from = 'auto',
+    String to = 'en',
+  }) {
     translate(text, from: from, to: to).then(print);
   }
 
   /// Sets base URL for countries that default URL doesn't work
-  set baseUrl(String url) => _baseUrl = url;
+  set baseUrl(String url) {
+    _baseUrl = url;
+  }
 }
 
 enum ClientType {

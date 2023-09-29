@@ -1,26 +1,23 @@
-import './token_provider_interface.dart';
+// ignore_for_file: parameter_assignments
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: avoid_catching_errors
+// ignore_for_file: type_annotate_public_apis
+// ignore_for_file: prefer_typing_uninitialized_variables
 
-///
-///  This class generates a token passed in google translate api URL
-///  with some hard math (based on JS token generator)
-///
-/// [author] Gabriel N. Pacheco
-///
+import './token_provider_interface.dart';
 
 class GoogleTokenGenerator implements TokenProvider {
   /// Generate and return a token
   @override
-  String generateToken(String text) {
-    return tokenGen(text);
-  }
+  String generateToken(String text) => tokenGen(text);
 
   /// Generate a valid Google Translate request token
   /// [a] is the text to translate
   String tokenGen(dynamic a) {
-    var tkk = TKK();
-    var b = tkk[0];
+    final tkk = TKK();
+    final b = tkk[0];
 
-    var d = []; //List();
+    final d = []; //List();
 
     for (var f = 0; f < a.toString().length; f++) {
       var g = a.toString().codeUnitAt(f);
@@ -36,8 +33,9 @@ class GoogleTokenGenerator implements TokenProvider {
             g = 65536 +
                 ((g & 1023) << 10) +
                 (a.toString().codeUnitAt(++f) & 1023);
-            d.add(g >> 18 | 240);
-            d.add(g >> 12 & 63 | 128);
+            d
+              ..add(g >> 18 | 240)
+              ..add(g >> 12 & 63 | 128);
           } else {
             d.add(g >> 12 | 224);
           }
@@ -62,12 +60,10 @@ class GoogleTokenGenerator implements TokenProvider {
     }
     a %= 1E6;
     a = (a as double).round();
-    return a.toString() + '.' + (a ^ int.parse(b)).toString();
+    return '$a.${a ^ int.parse(b)}';
   }
 
-  List TKK() {
-    return ['406398', (561666268 + 1526272306)];
-  }
+  List TKK() => ['406398', (561666268 + 1526272306)];
 
   int wr(dynamic a, dynamic b) {
     var d;
@@ -86,8 +82,8 @@ class GoogleTokenGenerator implements TokenProvider {
     }
   }
 
-  int unsignedRightShift(var a, var b) {
-    var m;
+  int unsignedRightShift(int a, int b) {
+    int m;
     if (b >= 32 || b < -32) {
       m = (b / 32) as int;
       b = b - (m * 32);
@@ -102,12 +98,12 @@ class GoogleTokenGenerator implements TokenProvider {
     }
 
     if (a < 0) {
-      a = (a >> 1);
+      a = a >> 1;
       a &= 2147483647;
       a |= 0x40000000;
-      a = (a >> (b - 1));
+      a = a >> (b - 1);
     } else {
-      a = (a >> b);
+      a = a >> b;
     }
     return a;
   }
